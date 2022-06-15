@@ -186,7 +186,7 @@ func WlanGetNetworkBssList(handle *windows.Handle,
 	pDot11Ssid *DOT11_SSID,
 	dot11BssType DOT11_BSS_TYPE,
 	bSecurityEnabled BOOL) (ppWlanBssList *WLAN_BSS_LIST, err error) {
-	r1, _, _ := wlanGetInterfaceCapability.Call(
+	r1, _, _ := wlanGetNetworkBssList.Call(
 		uintptr(unsafe.Pointer(handle)),
 		uintptr(unsafe.Pointer(pInterfaceGuid)),
 		uintptr(unsafe.Pointer(pDot11Ssid)),
@@ -202,7 +202,8 @@ func WlanGetNetworkBssList(handle *windows.Handle,
 
 //The WlanGetProfile function retrieves all information about a specified wireless profile.
 //https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetprofile
-func WlanGetProfile(handle *windows.Handle,
+func WlanGetProfile(
+	handle *windows.Handle,
 	pInterfaceGuid *syscall.GUID,
 	strProfileName string) (pstrProfileXml string, pdwFlags *DWORD, pdwGrantedAccess *DWORD, err error) {
 	pProfileName, err := syscall.UTF16PtrFromString(strProfileName)
@@ -211,7 +212,7 @@ func WlanGetProfile(handle *windows.Handle,
 		return
 	}
 	var pstrProfile *uint16
-	r1, _, _ := wlanGetInterfaceCapability.Call(
+	r1, _, _ := wlanGetProfile.Call(
 		uintptr(unsafe.Pointer(handle)),
 		uintptr(unsafe.Pointer(pInterfaceGuid)),
 		uintptr(unsafe.Pointer(pProfileName)),
@@ -220,6 +221,276 @@ func WlanGetProfile(handle *windows.Handle,
 		uintptr(unsafe.Pointer(pstrProfile)),
 		uintptr(unsafe.Pointer(pdwFlags)),
 		uintptr(unsafe.Pointer(pdwGrantedAccess)),
+	)
+	err = syscall.Errno(r1)
+	//syscall.UTF16ToString(pstrProfile)
+	return
+}
+
+//The WlanGetProfileCustomUserData function gets the custom user data associated with a wireless profile.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetprofilecustomuserdata
+func WlanGetProfileCustomUserData(
+	handle *windows.Handle,
+	pInterfaceGuid *syscall.GUID,
+	strProfileName string) (pdwDataSize *DWORD, ppData *BYTE, err error) {
+	pProfileName, err := syscall.UTF16PtrFromString(strProfileName)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	r1, _, _ := wlanGetProfileCustomUserData.Call(
+		uintptr(unsafe.Pointer(handle)),
+		uintptr(unsafe.Pointer(pInterfaceGuid)),
+		uintptr(unsafe.Pointer(pProfileName)),
+		pReserved,
+		// out
+		uintptr(unsafe.Pointer(pdwDataSize)),
+		uintptr(unsafe.Pointer(ppData)),
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanGetProfileList function retrieves the list of profiles in preference order.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetprofilelist
+func WlanGetProfileList(handle *windows.Handle, pInterfaceGuid *syscall.GUID) (ppProfileList *WLAN_PROFILE_INFO_LIST, err error) {
+	r1, _, _ := wlanGetProfileList.Call(
+		uintptr(unsafe.Pointer(handle)),
+		uintptr(unsafe.Pointer(pInterfaceGuid)),
+		pReserved,
+		// out
+		uintptr(unsafe.Pointer(ppProfileList)),
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanGetSecuritySettings function gets the security settings associated with a configurable object.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetsecuritysettings
+func WlanGetSecuritySettings(handle *windows.Handle, SecurableObject WLAN_SECURABLE_OBJECT) (
+	pValueType *WLAN_OPCODE_VALUE_TYPE, pdwGrantedAccess *DWORD, err error) {
+
+	var pstrCurrentSDDL *uint16
+	r1, _, _ := wlanGetSecuritySettings.Call(
+		uintptr(unsafe.Pointer(handle)),
+		uintptr(SecurableObject),
+		// out
+		uintptr(unsafe.Pointer(&pValueType)),
+		uintptr(unsafe.Pointer(&pstrCurrentSDDL)),
+		uintptr(unsafe.Pointer(&pdwGrantedAccess)),
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//WlanGetSupportedDeviceServices Retrieves a list of the supported device services on a given wireless LAN interface.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlangetsupporteddeviceservices
+func WlanGetSupportedDeviceServices(handle *windows.Handle, pInterfaceGuid *syscall.GUID) (
+	ppDevSvcGuidList *WLAN_DEVICE_SERVICE_GUID_LIST, err error) {
+
+	r1, _, _ := wlanGetSupportedDeviceServices.Call(
+		uintptr(unsafe.Pointer(handle)),
+		uintptr(unsafe.Pointer(pInterfaceGuid)),
+		// out
+		uintptr(unsafe.Pointer(&ppDevSvcGuidList)),
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkForceStart function transitions the wireless Hosted Network to the wlan_hosted_network_active state without associating the request with the application's calling handle.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworkforcestart
+func WlanHostedNetworkForceStart(handle *windows.Handle) (pFailReason *WLAN_HOSTED_NETWORK_REASON, err error) {
+	r1, _, _ := wlanHostedNetworkForceStart.Call(
+		uintptr(unsafe.Pointer(handle)),
+		// out
+		uintptr(unsafe.Pointer(&pFailReason)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkForceStop function transitions the wireless Hosted Network to the wlan_hosted_network_idle without associating the request with the application's calling handle.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworkforcestop
+func WlanHostedNetworkForceStop(handle *windows.Handle) (pFailReason *WLAN_HOSTED_NETWORK_REASON, err error) {
+	r1, _, _ := wlanHostedNetworkForceStop.Call(
+		uintptr(unsafe.Pointer(handle)),
+		// out
+		uintptr(unsafe.Pointer(&pFailReason)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkInitSettings function configures and persists to storage the network connection settings (SSID and maximum number of peers, for example) on the wireless Hosted Network if these settings are not already configured.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworkinitsettings
+func WlanHostedNetworkInitSettings(handle *windows.Handle) (pFailReason *WLAN_HOSTED_NETWORK_REASON, err error) {
+	r1, _, _ := wlanHostedNetworkInitSettings.Call(
+		uintptr(unsafe.Pointer(handle)),
+		// out
+		uintptr(unsafe.Pointer(&pFailReason)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkQueryProperty function queries the current static properties of the wireless Hosted Network.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworkqueryproperty
+func WlanHostedNetworkQueryProperty(handle *windows.Handle, OpCode WLAN_HOSTED_NETWORK_OPCODE) (
+	pdwDataSize *DWORD, ppvData *PVOID, pWlanOpcodeValueType *WLAN_OPCODE_VALUE_TYPE, err error) {
+
+	r1, _, _ := wlanHostedNetworkQueryProperty.Call(
+		uintptr(unsafe.Pointer(handle)),
+		uintptr(OpCode),
+		// out
+		uintptr(unsafe.Pointer(&pdwDataSize)),
+		uintptr(unsafe.Pointer(&ppvData)),
+		uintptr(unsafe.Pointer(&pWlanOpcodeValueType)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkQuerySecondaryKey function queries the secondary security key that is configured to be used by the wireless Hosted Network.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworkquerysecondarykey
+func WlanHostedNetworkQuerySecondaryKey(handle *windows.Handle) (
+	pdwKeyLength *DWORD, ppucKeyData *UCHAR, pbIsPassPhrase *BOOL, pbPersistent *BOOL, pFailReason WLAN_HOSTED_NETWORK_REASON, err error) {
+
+	r1, _, _ := wlanHostedNetworkQuerySecondaryKey.Call(
+		uintptr(unsafe.Pointer(handle)),
+		// out
+		uintptr(unsafe.Pointer(pdwKeyLength)),
+		uintptr(unsafe.Pointer(&ppucKeyData)),
+		uintptr(unsafe.Pointer(&pbIsPassPhrase)),
+		uintptr(unsafe.Pointer(&pbPersistent)),
+		uintptr(unsafe.Pointer(&pFailReason)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkQueryStatus function queries the current status of the wireless Hosted Network.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworkquerystatus
+func WlanHostedNetworkQueryStatus(handle *windows.Handle) (ppWlanHostedNetworkStatus *WLAN_HOSTED_NETWORK_STATUS, err error) {
+	r1, _, _ := wlanHostedNetworkQueryStatus.Call(
+		uintptr(unsafe.Pointer(handle)),
+		// out
+		uintptr(unsafe.Pointer(&ppWlanHostedNetworkStatus)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkRefreshSecuritySettings function refreshes the configurable and auto-generated parts of the wireless Hosted Network security settings.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworkrefreshsecuritysettings
+func WlanHostedNetworkRefreshSecuritySettings(handle *windows.Handle) (pFailReason *WLAN_HOSTED_NETWORK_REASON, err error) {
+	r1, _, _ := wlanHostedNetworkRefreshSecuritySettings.Call(
+		uintptr(unsafe.Pointer(handle)),
+		// out
+		uintptr(unsafe.Pointer(&pFailReason)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkSetProperty function sets static properties of the wireless Hosted Network.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworksetproperty
+func WlanHostedNetworkSetProperty(
+	handle *windows.Handle,
+	OpCode WLAN_HOSTED_NETWORK_OPCODE,
+	dwDataSize DWORD,
+	pvData PVOID) (pFailReason *WLAN_HOSTED_NETWORK_REASON, err error) {
+
+	r1, _, _ := wlanHostedNetworkSetProperty.Call(
+		uintptr(unsafe.Pointer(handle)),
+		uintptr(OpCode),
+		uintptr(dwDataSize),
+		uintptr(pvData),
+		// out
+		uintptr(unsafe.Pointer(&pFailReason)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkSetSecondaryKey function configures the secondary security key that will be used by the wireless Hosted Network.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworksetsecondarykey
+func WlanHostedNetworkSetSecondaryKey(
+	handle *windows.Handle,
+	dwKeyLength DWORD,
+	pucKeyData *UCHAR,
+	bIsPassPhrase, bPersistent BOOL) (pFailReason WLAN_HOSTED_NETWORK_REASON, err error) {
+
+	r1, _, _ := wlanHostedNetworkSetSecondaryKey.Call(
+		uintptr(unsafe.Pointer(handle)),
+		uintptr(dwKeyLength),
+		uintptr(unsafe.Pointer(pucKeyData)),
+		uintptr(bIsPassPhrase),
+		uintptr(bPersistent),
+		// out
+		uintptr(unsafe.Pointer(&pFailReason)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkStartUsing function starts the wireless Hosted Network.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworkstartusing
+func WlanHostedNetworkStartUsing(handle *windows.Handle) (pFailReason WLAN_HOSTED_NETWORK_REASON, err error) {
+
+	r1, _, _ := wlanHostedNetworkStartUsing.Call(
+		uintptr(unsafe.Pointer(handle)),
+		// out
+		uintptr(unsafe.Pointer(&pFailReason)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanHostedNetworkStopUsing function stops the wireless Hosted Network.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanhostednetworkstopusing
+func WlanHostedNetworkStopUsing(handle *windows.Handle) (pFailReason WLAN_HOSTED_NETWORK_REASON, err error) {
+
+	r1, _, _ := wlanHostedNetworkStopUsing.Call(
+		uintptr(unsafe.Pointer(handle)),
+		// out
+		uintptr(unsafe.Pointer(&pFailReason)),
+		pReserved,
+	)
+	err = syscall.Errno(r1)
+	return
+}
+
+//The WlanIhvControl function provides a mechanism for independent hardware vendor (IHV) control of WLAN drivers or services.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/nf-wlanapi-wlanihvcontrol
+func WlanIhvControl(
+	handle *windows.Handle,
+	pInterfaceGuid *syscall.GUID,
+	Type WLAN_IHV_CONTROL_TYPE,
+	dwInBufferSize DWORD,
+	pInBuffer PVOID,
+	dwOutBufferSize DWORD) (pOutBuffer *PVOID, pdwBytesReturned *DWORD, err error) {
+
+	r1, _, _ := wlanIhvControl.Call(
+		uintptr(unsafe.Pointer(handle)),
+		uintptr(unsafe.Pointer(pInterfaceGuid)),
+		uintptr(Type),
+		uintptr(dwInBufferSize),
+		uintptr(pInBuffer),
+		uintptr(dwOutBufferSize),
+		// out
+		uintptr(unsafe.Pointer(&pOutBuffer)),
+		uintptr(unsafe.Pointer(&pdwBytesReturned)),
 	)
 	err = syscall.Errno(r1)
 	return

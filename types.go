@@ -153,3 +153,30 @@ type WLAN_INTERFACE_CAPABILITY struct {
 	dwNumberOfSupportedPhys   DWORD
 	dot11PhyTypes             [MAX_INDEX + 1]DOT11_PHY_TYPE
 }
+
+//WLAN_DEVICE_SERVICE_GUID_LIST Contains an array of device service GUIDs.
+//https://docs.microsoft.com/zh-cn/windows/win32/api/wlanapi/ns-wlanapi-wlan_device_service_guid_list
+type WLAN_DEVICE_SERVICE_GUID_LIST struct {
+	dwNumberOfItems DWORD
+	dwIndex         DWORD
+	DeviceService   [MAX_INDEX + 1]syscall.GUID
+}
+
+//The WLAN_HOSTED_NETWORK_PEER_STATE structure contains information about the peer state for a peer on the wireless Hosted Network.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ns-wlanapi-wlan_hosted_network_peer_state
+type WLAN_HOSTED_NETWORK_PEER_STATE struct {
+	PeerMacAddress DOT11_MAC_ADDRESS
+	PeerAuthState  WLAN_HOSTED_NETWORK_PEER_AUTH_STATE
+}
+
+//The WLAN_HOSTED_NETWORK_STATUS structure contains information about the status of the wireless Hosted Network.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ns-wlanapi-wlan_hosted_network_status
+type WLAN_HOSTED_NETWORK_STATUS struct {
+	HostedNetworkState     WLAN_HOSTED_NETWORK_STATE
+	IPDeviceID             syscall.GUID
+	wlanHostedNetworkBSSID DOT11_MAC_ADDRESS
+	dot11PhyType           DOT11_PHY_TYPE
+	ulChannelFrequency     ULONG
+	dwNumberOfPeers        DWORD
+	PeerList               [MAX_INDEX + 1]WLAN_HOSTED_NETWORK_PEER_STATE
+}

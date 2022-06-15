@@ -227,3 +227,23 @@ const (
 	wlan_secure_wfd_elevated_access
 	WLAN_SECURABLE_OBJECT_COUNT
 )
+
+//The WLAN_OPCODE_VALUE_TYPE enumeration specifies the origin of automatic configuration (auto config) settings.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ne-wlanapi-wlan_opcode_value_type-r1
+type WLAN_OPCODE_VALUE_TYPE uint32
+
+const (
+	wlan_opcode_value_type_query_only WLAN_OPCODE_VALUE_TYPE = iota
+	wlan_opcode_value_type_set_by_group_policy
+	wlan_opcode_value_type_set_by_user
+	wlan_opcode_value_type_invalid
+)
+
+//The WLAN_IHV_CONTROL_TYPE enumeration specifies the type of software bypassed by a vendor-specific method.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ne-wlanapi-wlan_ihv_control_type-r1
+type WLAN_IHV_CONTROL_TYPE uint32
+
+const (
+	wlan_ihv_control_type_service WLAN_IHV_CONTROL_TYPE = iota
+	wlan_ihv_control_type_driver
+)
