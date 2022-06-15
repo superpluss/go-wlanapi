@@ -10,21 +10,44 @@ const (
 //A DOT11_SSID structure contains the SSID of an interface.
 //https://docs.microsoft.com/en-us/windows/win32/nativewifi/dot11-ssid
 type DOT11_SSID struct {
-	uSSIDLength uint32
+	uSSIDLength ULONG
 	ucSSID      [32]byte
+}
+
+type DOT11_MAC_ADDRESS [6]UCHAR
+
+//The DOT11_BSSID_LIST structure contains a list of basic service set (BSS) identifiers.
+//https://docs.microsoft.com/en-us/windows/win32/nativewifi/dot11-bssid-list
+type DOT11_BSSID_LIST struct {
+	Header             NDIS_OBJECT_HEADER
+	uNumOfEntries      ULONG
+	uTotalNumOfEntries ULONG
+	BSSIDs             [1]DOT11_MAC_ADDRESS
+}
+
+//The DOT11_NETWORK structure contains information about an available wireless network.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ns-wlanapi-dot11_network
+type DOT11_NETWORK struct {
+	dot11Ssid    DOT11_SSID
+	dot11BssType DOT11_BSS_TYPE
+}
+
+//The DOT11_NETWORK_LIST structure contains a list of 802.11 wireless networks.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ns-wlanapi-dot11_network_list
+type DOT11_NETWORK_LIST struct {
+	dwNumberOfItems DWORD
+	dwIndex         DWORD
+	Network         [MAX_INDEX + 1]DOT11_NETWORK
+}
+
+type NDIS_OBJECT_HEADER struct {
+	Type     UCHAR
+	Revision UCHAR
+	Size     USHORT
 }
 
 //The WLAN_AVAILABLE_NETWORK_LIST structure contains an array of information about available networks.
 //https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ns-wlanapi-wlan_available_network_list
-//typedef struct _WLAN_AVAILABLE_NETWORK_LIST {
-//  DWORD                  dwNumberOfItems;
-//  DWORD                  dwIndex;
-//#if ...
-//  WLAN_AVAILABLE_NETWORK *Network[];
-//#else
-//  WLAN_AVAILABLE_NETWORK Network[1];
-//#endif
-//} WLAN_AVAILABLE_NETWORK_LIST, *PWLAN_AVAILABLE_NETWORK_LIST;
 type WLAN_AVAILABLE_NETWORK_LIST struct {
 	dwNumberOfItems uint32
 	dwIndex         uint32
@@ -109,7 +132,24 @@ type WLAN_RAW_DATA struct {
 	DataBlob   [257]byte
 }
 
+//The WLAN_CONNECTION_PARAMETERS structure specifies the parameters used when using the WlanConnect function.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ns-wlanapi-wlan_connection_parameters
 type WLAN_CONNECTION_PARAMETERS struct {
-	wlanConnectionMode uint32
-	strProfile
+	wlanConnectionMode WLAN_CONNECTION_MODE
+	strProfile         string
+	pDot11Ssid         DOT11_SSID
+	pDesiredBssidList  DOT11_BSSID_LIST
+	dot11BssType       DOT11_BSS_TYPE
+	dwFlags            DWORD
+}
+
+//The WLAN_INTERFACE_CAPABILITY structure contains information about the capabilities of an interface.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ns-wlanapi-wlan_interface_capability
+type WLAN_INTERFACE_CAPABILITY struct {
+	interfaceType             WLAN_INTERFACE_TYPE
+	bDot11DSupported          BOOL
+	dwMaxDesiredSsidListSize  DWORD
+	dwMaxDesiredBssidListSize DWORD
+	dwNumberOfSupportedPhys   DWORD
+	dot11PhyTypes             [MAX_INDEX + 1]DOT11_PHY_TYPE
 }
