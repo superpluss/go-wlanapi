@@ -7,14 +7,17 @@ import (
 var (
 	wlanapi = syscall.NewLazyDLL("wlanapi.dll")
 
-	wlanOpenHandle                           = wlanapi.NewProc("WlanOpenHandle")
-	wlanScan                                 = wlanapi.NewProc("WlanScan")
-	fWlanCloseHandle                         = wlanapi.NewProc("WlanCloseHandle")
-	fWlanEnumInterfaces                      = wlanapi.NewProc("WlanEnumInterfaces")
+	procWlanFreeMemory = wlanapi.NewProc("WlanFreeMemory")
+
+	procWlanOpenHandle                       = wlanapi.NewProc("WlanOpenHandle")
+	procWlanCloseHandle                      = wlanapi.NewProc("WlanCloseHandle")
+	procWlanEnumInterfaces                   = wlanapi.NewProc("WlanEnumInterfaces")
+	procWlanScan                             = wlanapi.NewProc("WlanScan")
+	procWlanGetAvailableNetworkList          = wlanapi.NewProc("WlanGetAvailableNetworkList")
+	procWlanQueryInterface                   = wlanapi.NewProc("WlanQueryInterface")
 	wlanConnect                              = wlanapi.NewProc("WlanConnect")
 	wlanDisconnect                           = wlanapi.NewProc("WlanDisconnect")
 	wlanDeleteProfile                        = wlanapi.NewProc("WlanDeleteProfile")
-	wlanGetAvailableNetworkList              = wlanapi.NewProc("WlanGetAvailableNetworkList")
 	wlanGetFilterList                        = wlanapi.NewProc("WlanGetFilterList")
 	wlanGetInterfaceCapability               = wlanapi.NewProc("WlanGetInterfaceCapability")
 	wlanGetProfile                           = wlanapi.NewProc("WlanGetProfile")

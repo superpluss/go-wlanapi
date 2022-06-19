@@ -247,3 +247,53 @@ const (
 	wlan_ihv_control_type_service WLAN_IHV_CONTROL_TYPE = iota
 	wlan_ihv_control_type_driver
 )
+
+//The WLAN_AUTOCONF_OPCODE enumerated type specifies an automatic configuration parameter.
+//https: //docs.microsoft.com/en-us/windows/win32/api/wlanapi/ne-wlanapi-wlan_autoconf_opcode-r1
+type WLAN_AUTOCONF_OPCODE uint32
+
+const (
+	wlan_autoconf_opcode_start WLAN_AUTOCONF_OPCODE = iota
+	wlan_autoconf_opcode_show_denied_networks
+	wlan_autoconf_opcode_power_setting
+	wlan_autoconf_opcode_only_use_gp_profiles_for_allowed_networks
+	wlan_autoconf_opcode_allow_explicit_creds
+	wlan_autoconf_opcode_block_period
+	wlan_autoconf_opcode_allow_virtual_station_extensibility
+	wlan_autoconf_opcode_end
+)
+
+//The WLAN_INTF_OPCODE enumerated type defines various opcodes used to set and query parameters on a wireless interface.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ne-wlanapi-wlan_intf_opcode-r1
+type WLAN_INTF_OPCODE uint32
+
+const (
+	wlanIntfOpcodeAutoconfStart WLAN_INTF_OPCODE = iota
+	WlanIntfOpcodeAutoconfEnabled
+	WlanIntfOpcodeBackgroundScanEnabled
+	WlanIntfOpcodeMediaStreamingMode
+	WlanIntfOpcodeRadioState
+	WlanIntfOpcodeBssType
+	WlanIntfOpcodeInterfaceState
+	WlanIntfOpcodeCurrentConnection
+	WlanIntfOpcodeChannelNumber
+	WlanIntfOpcodeSupportedInfrastructureAuthCipherPairs
+	WlanIntfOpcodeSupportedAdhocAuthCipherPairs
+	WlanIntfOpcodeSupportedCountryOrRegionStringList
+	WlanIntfOpcodeCurrentOperationMode
+	WlanIntfOpcodeSupportedSafeMode
+	WlanIntfOpcodeCertifiedSafeMode
+	WlanIntfOpcodeHostedNetworkCapable
+	WlanIntfOpcodeManagementFrameProtectionCapable
+	WlanIntfOpcodeSecondaryStaInterfaces
+	WlanIntfOpcodeSecondaryStaSynchronizedConnections
+	WlanIntfOpcodeAutoconfEnd WLAN_INTF_OPCODE = 0x0fffffff
+	WlanIntfOpcodeMsmStart    WLAN_INTF_OPCODE = 0x10000100
+	WlanIntfOpcodeStatistics
+	WlanIntfOpcodeRssi
+	WlanIntfOpcodeMsmEnd        = 0x1fffffff
+	WlanIntfOpcodeSecurityStart = 0x20010000
+	WlanIntfOpcodeSecurityEnd   = 0x2fffffff
+	WlanIntfOpcodeIhvStart      = 0x30000000
+	WlanIntfOpcodeIhvEnd        = 0x3fffffff
+)

@@ -1,6 +1,9 @@
 package wlanapi
 
-import "syscall"
+import (
+	"golang.org/x/sys/windows"
+	"syscall"
+)
 
 const (
 	MAX_INDEX = 1000
@@ -74,6 +77,10 @@ type WLAN_AVAILABLE_NETWORK struct {
 	dwReserved                  uint32
 }
 
+func (avn WLAN_AVAILABLE_NETWORK) GetStrProfileName() (profileName string) {
+	return windows.UTF16ToString(avn.strProfileName[:])
+}
+
 type WLAN_BSS_LIST struct {
 	dwTotalSize     uint32
 	dwNumberOfItems uint32
@@ -105,7 +112,7 @@ type WLAN_RATE_SET struct {
 }
 
 type WLAN_INTERFACE_INFO struct {
-	InterfaceGuid           syscall.GUID
+	InterfaceGuid           windows.GUID
 	strInterfaceDescription [256]uint16
 	isState                 uint32
 }
@@ -180,3 +187,28 @@ type WLAN_HOSTED_NETWORK_STATUS struct {
 	dwNumberOfPeers        DWORD
 	PeerList               [MAX_INDEX + 1]WLAN_HOSTED_NETWORK_PEER_STATE
 }
+
+//The EAP_TYPE structure contains type and vendor identification information for an EAP method.
+//https://docs.microsoft.com/en-us/windows/win32/api/eaptypes/ns-eaptypes-eap_type
+type EAP_TYPE struct {
+	Type         BYTE
+	dwVendorId   DWORD
+	dwVendorType DWORD
+}
+
+//The EAP_METHOD_TYPE structure contains type, identification, and author information about an EAP method.
+//https://docs.microsoft.com/en-us/windows/win32/api/eaptypes/ns-eaptypes-eap_method_type
+type EAP_METHOD_TYPE struct {
+	eapType    EAP_TYPE
+	dwAuthorId DWORD
+}
+
+//The WLAN_RAW_DATA_LIST structure contains raw data in the form of an array of data blobs that are used by some Native Wifi functions.
+//https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/ns-wlanapi-wlan_raw_data_list
+//TODO:
+type WLAN_RAW_DATA_LIST struct {
+	dwTotalSize     DWORD
+	dwNumberOfItems DWORD
+}
+
+type WLAN_REASON_CODE uint32
